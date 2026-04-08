@@ -1,0 +1,28 @@
+#!/bin/bash
+#BSUB -q rvmartin
+#BSUB -n 1
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=100GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/intel-py:202508)'
+#BSUB -J  "tess_amf_diagnostic_20230701"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobstess
+#BSUB -u yany1@wustl.edu
+#BSUB -o job_output/tess_amf_diagnostic_20230701-%J.txt
+
+mkdir -p job_output
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Derive_Geophysical_NO2/Tessellation/tess/
+/bin/bash
+
+ulimit -s unlimited
+
+python3 -u quick_amf_diagnostic.py --year 2023 --mon 07 --day 01
+# python3 -u omi_amf_average.py 2014 --month 01 
+# python3 -u tropomi_amf_average.py 2023 --month 01 --plot-only   # monthly average
+# python3 -u tess_TROPOMI_AMFtot.py --year 2023 --mon 01 --day 01
+
+#'docker(1yuyan/intel-py:202508)' for tessellation
+#'docker(1yuyan/netcdf-mpi:latest)' for omi_average

@@ -1,0 +1,24 @@
+#!/bin/bash
+#BSUB -q qa
+#BSUB -n 1
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=200GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/python-gfortran:latest)'
+#BSUB -J  "plot_geono2_vs_satcol_paper"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs30
+#BSUB -u yany1@wustl.edu
+#BSUB -o job_output/plot_geono2_vs_satcol_paper-%J.txt
+
+mkdir -p job_output
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Model_Evaluation_pkg/compr
+/bin/bash
+ulimit -s unlimited
+
+# python3 compr_geo_gchp_global_v53.py --year 2023
+# python3 plot_scatter.py
+# python3 plot_scatter_global_v53.py --year 2023
+python3 -u plot_geono2_vs_satcol_paper.py

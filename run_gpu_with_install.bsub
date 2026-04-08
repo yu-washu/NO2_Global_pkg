@@ -1,0 +1,107 @@
+#!/bin/bash
+#BSUB -n 2
+#BSUB -q general
+#BSUB -R "rusage[mem=150GB] span[hosts=1] select[gpuhost && port8543=1 && hname!='compute1-exec-401.ris.wustl.edu']"
+#BSUB -G compute-rvmartin
+#BSUB -W 336:00
+#BSUB -gpu "num=1:j_exclusive=no"
+#BSUB -a 'docker(1yuyan/lightgbm-cuda:latest)'
+#BSUB -J "Training2019"
+#BSUB -g /yany1/jobs30
+#BSUB -N
+#BSUB -u yany1@wustl.edu
+#BSUB -o logs-v0.2.0/Training2019-cuda-%J-output.txt
+
+mkdir -p logs-v0.2.0
+
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg
+. /opt/conda/bin/activate
+
+ulimit -s unlimited
+
+# ========================================================================
+# AUTO-INSTALL CUDA-enabled LightGBM (if not already installed correctly)
+# ========================================================================
+echo "========================================================================"
+echo "Checking LightGBM GPU support..."
+echo "========================================================================"
+
+# Quick test if GPU LightGBM is working
+python << 'EOF'
+import sys
+try:
+    import lightgbm as lgb
+    import numpy as np
+    X = np.random.rand(100, 10)
+    y = np.random.rand(100)
+    train_data = lgb.Dataset(X, label=y)
+    params = {'device': 'gpu', 'objective': 'regression', 'verbose': -1}
+    lgb.train(params, train_data, num_boost_round=1)
+    print("✓ GPU LightGBM is working - skipping installation")
+    sys.exit(0)
+except Exception as e:
+    if 'OpenCL' in str(e):
+        print("✗ OpenCL error detected - need to reinstall with CUDA support")
+        sys.exit(1)
+    else:
+        print(f"✗ GPU test failed: {e}")
+        sys.exit(1)
+EOF
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "Installing CUDA-enabled LightGBM..."
+    echo "--------------------------------------------------------------------"
+    
+    # Try pip installation in user space (doesn't require /opt/conda write permissions)
+    echo "Attempting pip installation with --user flag..."
+    pip uninstall -y lightgbm 2>/dev/null
+    
+    # Install from pip - use GPU-compatible version
+    pip install --user lightgbm --no-cache-dir
+    
+    if [ $? -eq 0 ]; then
+        echo "✓ LightGBM installed successfully via pip"
+        echo ""
+        
+        # Verify installation
+        python -c "import lightgbm as lgb; print(f'LightGBM version: {lgb.__version__}')"
+        
+        # Test GPU support again
+        echo ""
+        echo "Re-testing GPU support..."
+        python << 'EOFTEST'
+import sys
+try:
+    import lightgbm as lgb
+    import numpy as np
+    X = np.random.rand(100, 10)
+    y = np.random.rand(100)
+    train_data = lgb.Dataset(X, label=y)
+    params = {'device': 'gpu', 'objective': 'regression', 'verbose': -1}
+    lgb.train(params, train_data, num_boost_round=1)
+    print("✓ GPU support is now working!")
+    sys.exit(0)
+except Exception as e:
+    print(f"⚠️  GPU still not working: {e}")
+    print("Training will use CPU fallback")
+    sys.exit(0)
+EOFTEST
+    else
+        echo "⚠️  pip installation failed - will try automatic CPU fallback"
+    fi
+    echo "--------------------------------------------------------------------"
+fi
+
+echo "========================================================================"
+echo "Starting training..."
+echo "========================================================================"
+echo ""
+
+# Run your training script
+python3 test_gpu_lightgbm.py
+
+echo ""
+echo "========================================================================"
+echo "Training completed: $(date)"
+echo "========================================================================"

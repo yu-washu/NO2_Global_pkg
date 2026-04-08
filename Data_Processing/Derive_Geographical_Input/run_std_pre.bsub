@@ -1,0 +1,19 @@
+#!/bin/bash
+#BSUB -q rvmartin
+#BSUB -n 2
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=200GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/pytorch:latest)'
+#BSUB -J  "xyz"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1@compute1-client-1/jobs
+#BSUB -u yany1@wustl.edu
+#BSUB -o job_output/job-%J-output.txt
+
+mkdir -p job_output
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_processing/Derive_Geographical_Input
+
+python3 latlon.py

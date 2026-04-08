@@ -1,0 +1,2 @@
+NDVI_input_indir = '/my-projects2/1.project/NO2_DL_global_2019/NO2_global_pkg/input_variables/NDVI_input/'
+NDVI_outdir = '/my-projects2/1.project/NO2_DL_global_2019/NO2_global_pkg/input_variables/NDVI_input/'

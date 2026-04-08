@@ -1,0 +1,21 @@
+#!/bin/bash
+#BSUB -n 2
+#BSUB -R "rusage[mem=300G] span[hosts=1]"
+#BSUB -q rvmartin
+#BSUB -a 'docker(1yuyan/python-gfortran:latest)'
+#BSUB -N
+#BSUB -u yany1@wustl.edu
+#BSUB -o lsf-%J.txt
+#BSUB -J "plot_map"
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs30
+#BSUB -o logs/map-%J-output.txt
+
+mkdir -p logs
+
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Model_Evaluation_pkg/plot
+. /opt/conda/bin/activate
+
+ulimit -s unlimited
+
+python3 plot_map.py

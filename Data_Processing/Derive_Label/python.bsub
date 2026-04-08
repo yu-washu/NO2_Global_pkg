@@ -1,0 +1,20 @@
+#!/bin/bash
+#BSUB -q general
+#BSUB -n 2
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=500GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/netcdf-mpi:latest)'
+#BSUB -J  "Obs_v6_5.13"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs30
+#BSUB -u yany1@wustl.edu
+#BSUB -o logs/Obs_v6_5.13_%J.txt
+
+mkdir -p logs
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Derive_Label
+ulimit -s unlimited
+
+python3 derive_observation_HP.py

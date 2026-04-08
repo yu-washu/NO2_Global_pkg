@@ -1,0 +1,46 @@
+#!/bin/bash
+#BSUB -q general
+#BSUB -n 2
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=200GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/pytorch:latest)'
+#BSUB -J  "poland"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs20
+#BSUB -u yany1@wustl.edu
+#BSUB -o job_output/job-%J-output.txt
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global_2019/NO2_global_pkg/Data_processing/Get_OpenStreetMap_Input/
+
+declare -A Region_list
+
+# dolnoslaskie mazowieckie
+Region_list["poland"]="swietokrzyskie kujawsko-pomorskie opolskie warminsko-mazurskie lodzkie podkarpackie \
+                        wielkopolskie lubelskie podlaskie zachodniopomorskie lubuskie pomorskie malopolskie slaskie"
+
+entries=(primary secondary trunk motorway tertiary residential unclassified)
+
+for region in ${Region_list["poland"]}
+do
+    for entry in "${entries[@]}"
+    do
+        echo "Processing region: $region, entry: $entry"
+        python main.py \
+            --Continent "poland" \
+            --regions_list "$region" \
+            --Entry_List_forRegional_RoadDensityMap "$entry"
+    done
+done
+
+# python main.py
+
+# for entry in "${entries[@]}"
+# do
+#     echo "Processing entry: $entry"
+#     python3 main_nearest_roaddensity_pixels.py -R "$entry"
+# done
+
+# # Aggregate the road density map and the nearest road density pixels for each pixel.
+# python3 aggreagte_road_variables.py

@@ -1,0 +1,35 @@
+# macOS metadata
+.DS_Store
+._*
+
+# Data files
+*.nc
+*.h5
+*.npy
+*.npz
+*.dat
+
+# Compiled Fortran modules
+*.mod
+
+# Logs & job outputs
+*.log
+*.out
+*.md
+job_output*/
+logs*/
+pipeline_logs*/
+pipeline*/
+PIPELINE*/
+temp*/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Weights & Biases
+wandb/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

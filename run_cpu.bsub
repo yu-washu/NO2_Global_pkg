@@ -1,0 +1,47 @@
+#!/bin/bash
+#BSUB -n 2
+#BSUB -q qa
+#BSUB -R "rusage[mem=150GB] span[hosts=1] select[port8543=1 && model==Intel_Xeon_Gold6154CPU300GHz||model==Intel_Xeon_Gold6242CPU280GHz]"
+#BSUB -G compute-rvmartin
+#BSUB -W 336:00
+#BSUB -a 'docker(1yuyan/pytorch-wandb:latest)'
+#BSUB -J "Ensemble"
+#BSUB -g /yany1/jobsBLISCO
+#BSUB -N
+#BSUB -u yany1@wustl.edu
+#BSUB -o logs-v0.2.0/Ensemble-%J-output.txt
+
+mkdir -p logs-v0.2.0
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg
+. /opt/conda/bin/activate
+
+ulimit -s unlimited
+
+python3 ensemble_example.py
+# python3 main.py
+# /bin/true
+# pause_time=$((RANDOM % 50 + 0))
+# echo "Pausing for $pause_time seconds..."
+# sleep $pause_time
+
+# var=''
+# sed -i '/\[Sensitivity_Test\-Settings\.Training_Settings]/,/^\[/{/Exclude_Variables_Sensitivity_Test_Switch/s/=.*/=true/;}' config.toml
+# sed -i '/\[Sensitivity_Test\-Settings\.Training_Settings]/,/^\[/{/Exclude_Variables_Sensitivity_Test_Variables/s/=.*/=[['\"${var}\"']]/;}' config.toml
+# sed -i '/\[Sensitivity_Test\-Settings\.Training_Settings]/,/^\[/{/Include_Variables_Sensitivity_Test_Variables/s/=.*/=[['\"${var}\"']]/;}' config.toml
+
+# Buffer_size=[80]
+# sed -i '/\[BLCO\-CrossValidation\]/,/^\[/{/Buffer_size/s/=.*/= '"$Buffer_size"'/}' config.toml
+# sed -i '/\[Uncertainty\-Settings\.BLISCO_LOWESS_Uncertainty_Settings\]/,/^\[/{/Buffer_radii_forUncertainty/s/=.*/= '"$Buffer_size"'/}' config.toml
+
+# beginyears_endyears=[2023]
+# Estimation_years=[[2023]]
+# sed -i '/\[Estimation\-Settings\.Training_Settings\]/,/^\[/{/beginyears/s/=.*/= '"$beginyears_endyears"'/;/endyears/s/=.*/= '"$beginyears_endyears"'/;}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_beginyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estiamtion_trained_endyears/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Map_Estimation_Settings\]/,/^\[/{/Estimation_years/s/=.*/= '"$Estimation_years"'/}' config.toml
+# sed -i '/\[Estimation\-Settings\.Visualization_Settings\]/,/^\[/{/Map_Plot_YEARS/s/=.*/= '"$beginyears_endyears"'/}' config.toml
+
+# NVIDIAA100_SXM4_80GB
+# NVIDIAA40
+# NVIDIAA100_SXM4_40GB
+# TeslaV100_SXM2_32G

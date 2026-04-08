@@ -1,0 +1,22 @@
+#!/bin/bash
+#BSUB -q qa
+#BSUB -n 1
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=200GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/netcdf-mpi:latest)'
+#BSUB -J  "plot200603"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/tropomi_monthly
+#BSUB -u yany1@wustl.edu
+#BSUB -o job_output/plot_200603-%J.txt
+
+mkdir -p job_output
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Derive_Geophysical_NO2/GeoNO2
+ulimit -s unlimited
+
+export HDF5_USE_FILE_LOCKING=FALSE
+# python3 plot_tropomi.py -year 2023 --yearly-only
+python3 plot_geono2.py -year 2006 -mon 03

@@ -1,0 +1,25 @@
+#!/bin/bash
+#BSUB -q qa
+#BSUB -n 1
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=300GB] span[hosts=1] select[port8543=1 && hname!='compute1-exec-16.ris.wustl.edu' && hname!='compute1-exec-17.ris.wustl.edu' && hname!='compute1-exec-29.ris.wustl.edu']"
+#BSUB -a 'docker(1yuyan/netcdf-mpi:latest)'
+#BSUB -J  "av_2023"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs30
+#BSUB -u yany1@wustl.edu
+#BSUB -o logs/av_2023-%J.txt
+
+mkdir -p logs
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Regrid_GCHP
+/bin/bash
+
+ulimit -s unlimited
+
+# python3 main_nearest_neighbour.py --year 2023 --mon 01 --day 01
+# python3 -u main.py --year 2005 --mon 12 --day 01
+python3 -u aggregate.py 2023 --yearly-only
+# python3 aggregate.py 2023 --month 04 --dataset trop

@@ -1,0 +1,24 @@
+#!/bin/bash
+#BSUB -q rvmartin
+#BSUB -n 2
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=500GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/netcdf-mpi:latest)'
+#BSUB -J  "Plot_filled_gap_NO2"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs30
+#BSUB -u yany1@wustl.edu
+#BSUB -o logs/plot_filled_gap_NO2-%J.log
+
+mkdir -p logs
+
+. /opt/conda/bin/activate
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_Processing/Model_Evaluation_pkg/plot/plot_TrainningData/
+ulimit -s unlimited
+
+export HDF5_USE_FILE_LOCKING=FALSE
+# python3 plot_land.py
+# python3 plot.py --years 2019 2020 2021 2022 2023 --data_type gchp_NO2
+# python3 plot_input_predictors.py --years 2020 --data_type both
+python3 plot_flling_values.py

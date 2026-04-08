@@ -1,0 +1,23 @@
+#!/bin/bash
+#BSUB -q rvmartin
+#BSUB -n 8
+#BSUB -W 499:00
+#BSUB -R "rusage[mem=300GB] span[hosts=1] select[port8543=1]"
+#BSUB -a 'docker(1yuyan/pytorch:latest)'
+#BSUB -J  "TrainingDatasets_v6.1"
+#BSUB -N
+#BSUB -G compute-rvmartin
+#BSUB -g /yany1/jobs30
+#BSUB -u yany1@wustl.edu
+#BSUB -o job_output/TrainingDatasets_v6.1-%J.txt
+
+# Set up runtime environment
+
+cd /my-projects2/1.project/NO2_DL_global/NO2_global_pkg/Data_processing/derive_TrainingDatasets/
+. /opt/conda/bin/activate
+
+export PYTHONUNBUFFERED=1
+
+python3 main.py --width 5 --height 5--workers 48 
+# python3 main.py --width 11 --height 11
+# python3 add_channels_main.py --width 5 --height 5 --workers 48 --skip-indices

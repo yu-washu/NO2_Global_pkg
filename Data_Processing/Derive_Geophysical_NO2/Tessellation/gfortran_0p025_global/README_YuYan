@@ -1,0 +1,21 @@
+Tessellate_variableenpix.f90 was set for max grids of 0.1x0.1.
+For this, variable declaration is:   INTEGER, PARAMETER :: MAXLON = 3601, MAXLON1=5401, MAXLAT = 2000 ...
+
+And you can compile using:
+ifort tessellate_variablenpix.f90 tesselation_software.f -o tessellate_variablenpix
+
+For finer grids, need to increase these values. 
+For 0.05x0.05:
+INTEGER, PARAMETER :: MAXLON = 7201, MAXLON1=10801, MAXLAT = 3601
+For 0.01x0.01
+INTEGER, PARAMETER :: MAXLON = 36001, MAXLON1=54001, MAXLAT = 14001
+
+And you need to use this to compile:
+ifort -mcmodel=medium tessellate_variablenpix.f90 tesselation_software.f -o tessellate_variablenpix
+ifx -mcmodel=medium tessellate_variablenpix_omi.f90 tesselation_software.f -o tessellate_variablenpix_omi
+gfortran -mcmodel=medium tessellate_variablenpix.f90 tesselation_software.f -o tessellate_variablenpix
+because otherwise the arrays sizes are wrong and it won't compile.
+
+Also, there are 3 write statements at the bottom of tessellate_variablenpix.f90, 
+and you need to set the format statement so that it has the right number of values
+(should be equal to the number of longitude bins)
